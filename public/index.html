@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your $GRINCH Bonus</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #1a1a2e;
+      color: white;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.2em;
+      text-align: center;
+      margin: 0 0 15px;
+      animation: fadeIn 1.5s ease-out;
+    }
+
+    .coins {
+      font-size: 2em;
+      color: #FFD700;
+      margin-bottom: 30px;
+      text-align: center;
+      animation: fadeIn 1.5s ease-out;
+    }
+
+    button {
+      padding: 10px 25px;
+      font-size: 1.1em;
+      background-color: #FFD700;
+      color: #1a1a2e;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255, 215, 0, 0.5);
+      transition: all 0.3s ease-out;
+    }
+
+    button:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 15px rgba(255, 215, 0, 0.7);
+    }
+
+    .page-transition {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1a1a2e;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 9999;
+    }
+
+    .page-transition.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.5em;
+      animation: snow linear infinite;
+    }
+
+    @keyframes snow {
+      0% {
+        transform: translateX(0) translateY(0);
+      }
+      100% {
+        transform: translateX(calc(var(--endX, 0px))) translateY(100vh);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-transition" id="pageTransition"></div>
+  <h1>Your $GRINCH Bonus!</h1>
+  <div class="coins" id="coins">Loading...</div>
+  <div class="button-container">
+    <button id="continueButton">Continue</button>
+  </div>
+
+  <script>
+    // Проверяем, есть ли сохраненные монеты
+    const savedCoins = localStorage.getItem('grinchCoins');
+    if (savedCoins) {
+      window.location.href = `./menu.html?grinchCoins=${savedCoins}`;
+    }
+
+    // Анимация начисления GRINCH
+    function animateCoins(targetCoins) {
+      const coinsElement = document.getElementById('coins');
+      let currentCoins = 0;
+
+      const interval = setInterval(() => {
+        currentCoins += 2;
+        coinsElement.textContent = `+${currentCoins} $GRINCH`;
+
+        if (currentCoins >= targetCoins) {
+          clearInterval(interval);
+          coinsElement.textContent = `+${targetCoins} $GRINCH`;
+          localStorage.setItem('grinchCoins', targetCoins); // Сохраняем монеты
+        }
+      }, 10);
+    }
+
+    // Генерация снежинок
+    function createSnowflakes() {
+      setInterval(() => {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        snowflake.innerHTML = '❄';
+        snowflake.style.left = `${Math.random() * 100}vw`;
+        snowflake.style.fontSize = `${Math.random() * 1.5 + 1}em`;
+        snowflake.style.animationDuration = `${Math.random() * 3 + 7}s`;
+        snowflake.style.setProperty('--endX', `${Math.random() * 200 - 100}px`);
+        document.body.appendChild(snowflake);
+
+        setTimeout(() => snowflake.remove(), 10000);
+      }, 200);
+    }
+
+    // Обработчик кнопки
+    document.getElementById('continueButton').addEventListener('click', () => {
+      const transition = document.getElementById('pageTransition');
+      transition.classList.add('active');
+      
+      setTimeout(() => {
+        window.location.href = `./menu.html?grinchCoins=${localStorage.getItem('grinchCoins')}`;
+      }, 500);
+    });
+
+    // Получаем случайное количество монет
+    const grinchCoins = Math.floor(Math.random() * 501) + 400;
+
+    // Запуск анимации начисления
+    animateCoins(grinchCoins);
+
+    // Запуск снежинок
+    createSnowflakes();
+  </script>
+</body>
+</html>
